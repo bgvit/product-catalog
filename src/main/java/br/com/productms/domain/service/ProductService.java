@@ -5,8 +5,8 @@ import br.com.productms.infrastructure.repository.ProductRepository;
 import br.com.productms.infrastructure.repository.exception.InvalidPriceException;
 import br.com.productms.infrastructure.repository.exception.MissingArgumentsException;
 import br.com.productms.infrastructure.repository.exception.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,12 +20,12 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
 
-    @Autowired
-    ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-    public ResponseEntity<List<Product>> getProducts(){
+    public ResponseEntity<List<Product>> getProducts() {
         return ResponseEntity.ok(productRepository.findAll());
     }
 
@@ -79,10 +79,10 @@ public class ProductService {
 
         return ResponseEntity.created(location).body(savedProduct);
     }
-//
+
     private void validateProduct(Product product) {
 
-        if (areMissingProductRequirements(product)){
+        if (areMissingProductRequirements(product)) {
             throw new MissingArgumentsException(HttpStatus.BAD_REQUEST, "Algum campo requerido está faltando. Por favor, verifique se o nome do produto, sua descrição e o preço estão presentes em seu pedido.");
         }
 
@@ -92,11 +92,8 @@ public class ProductService {
 
     }
 
-    private Boolean areMissingProductRequirements(Product product){
-        if (Objects.isNull(product.getPrice()) && StringUtils.isEmpty(product.getName()) && StringUtils.isEmpty(product.getDescription())) {
-            return true;
-        }
-        return false;
+    private Boolean areMissingProductRequirements(Product product) {
+        return Objects.isNull(product.getPrice()) && StringUtils.isEmpty(product.getName()) && StringUtils.isEmpty(product.getDescription());
     }
 }
 
